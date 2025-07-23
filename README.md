@@ -79,3 +79,11 @@ git push origin main
 上記の後、GitHubを見ると、自分が修正したソースコードを確認できる。
 
 otree-econ-exp-team1　を開き、 `otree devserver` コマンドを実行することで、oTreeを起動することができる。
+
+
+⭐️ 5. ソースコードを最新化する方法
+
+otree-econ-exp-team1 フォルダ内で以下のコマンドを実行する
+`git pull`
+
+上記を実行することでGitHub上の最新のソースコードを取得することができる。
