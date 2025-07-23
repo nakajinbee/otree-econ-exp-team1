@@ -39,6 +39,10 @@ class Player(BasePlayer):
         return 1 if self.id_in_group in [1, 2] else 2
     
     def live_chat(self, message):
+        if isinstance(message, dict) and message.get("type") == "get_vars":
+            # もともと vars_for_template() で返してたものをここで返す
+            chat_log = self.group.chat_log_team1 if self.team() == 1 else self.group.chat_log_team2
+            return {self.id_in_group: {'chat_log': chat_log}}
         team = self.team()
         group = self.group
         label = self.participant.label or f"P{self.id_in_group}"
@@ -57,12 +61,14 @@ class Player(BasePlayer):
             else:
                 group.chat_log_team2 = text
 
+
         debug_chat = ""
         if team == 1:
-            debug_chat = chat_log_team1
-        else: 
-            debug_chat = chat_log_team2
-        print(f"[live_chat] player {self.id_in_group} (team {team}) sent message: {text} group.chat_log_team1")
+            debug_chat = group.chat_log_team1
+        else:
+            debug_chat = group.chat_log_team2
+        print(f"[live_chat] player {self.id_in_group} (team {team}) sent message: {text} debug_chat:{debug_chat}")
+ 
 
     # 同じチームの全プレイヤーに送信（return形式）
         return {p.id_in_group: text for p in group.get_players() if p.team() == team}
@@ -72,7 +78,7 @@ def check_force_terminate(group: Group, **kwargs):
     for p in group.get_players():
         if p.timed_out or p.e is None or p.q is None:
             group.force_terminate = True
-            break 
+            break   
     
 
 def set_payoffs(group: Group):

@@ -6,7 +6,10 @@
 <p>グループでリアルタイムチャットができます。45秒以内にCまたはNを選択してください。</p>
 
 <!-- チャットボックス -->
-<div id="chat-box" style="border:1px solid #ccc; height:200px; overflow-y:scroll; margin-bottom:10px; padding:5px;"></div>
+<div id="chat-log" style="border: 1px solid #ccc; height: 200px; overflow-y: scroll; white-space: pre-wrap;">
+    {{ chat_log }}
+</div>
+ 
 
 <!-- メッセージ送信用 -->
 <input id="chat-input" type="text" placeholder="メッセージを入力..." style="width: 80%;">
@@ -34,6 +37,7 @@
             liveSend(message);
             input.value = '';
         }
+        location.reload();
     });
 
     liveRecv((message) => {
@@ -42,6 +46,13 @@
         chatBox.appendChild(div);
         chatBox.scrollTop = chatBox.scrollHeight;
     });
+
+
+    setTimeout(() => {
+        liveSend({ type: "get_vars" });
+        location.reload();
+    }, 1000);
+ 
 
     
     // 45秒後に自動でフォームを送信（ページ遷移）
