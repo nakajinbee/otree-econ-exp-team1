@@ -1,0 +1,52 @@
+{% extends "global/Page.html" %}
+{% load otree %}
+
+{% block content %}
+<h3>市場内チャット（45秒）</h3>
+<p>グループでリアルタイムチャットができます。45秒以内にCまたはNを選択してください。</p>
+
+<!-- チャットボックス -->
+<div id="chat-box" style="border:1px solid #ccc; height:200px; overflow-y:scroll; margin-bottom:10px; padding:5px;"></div>
+
+<!-- メッセージ送信用 -->
+<input id="chat-input" type="text" placeholder="メッセージを入力..." style="width: 80%;">
+<button type="button" id="send-btn">送信</button>
+
+<hr>
+
+<!-- プレイヤー選択 -->
+ <form method="post">
+    {{ formfields }}
+    <!-- 次へボタンは非表示 -->
+    <button type="submit" style="display: none;" id="hidden-submit">次へ</button>
+</form>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    const chatBox = document.getElementById('chat-box');
+    const input = document.getElementById('chat-input');
+    const sendBtn = document.getElementById('send-btn');
+
+    sendBtn.addEventListener('click', () => {
+        const message = input.value.trim();
+        if (message) {
+            liveSend(message);
+            input.value = '';
+        }
+    });
+
+    liveRecv((message) => {
+        const div = document.createElement('div');
+        div.textContent = message;
+        chatBox.appendChild(div);
+        chatBox.scrollTop = chatBox.scrollHeight;
+    });
+
+    
+    // 45秒後に自動でフォームを送信（ページ遷移）
+    setTimeout(() => {
+        document.getElementById('hidden-submit').click();
+    }, 45 * 1000);  // 45秒
+</script>
+{% endblock %}
