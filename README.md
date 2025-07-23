@@ -49,10 +49,12 @@ GitHub上にあるプロジェクトを、自分のPCにまるごとコピーす
 
 
 ◉ 手順
-	1.	ターミナルやコマンドプロンプトを開く
-	2.	oTreeのファイルをを配置したい場所で以下のコマンドを実行：
+1.	ターミナルやコマンドプロンプトを開く
+2.	oTreeのファイルをを配置したい場所で以下のコマンドを実行：
+
 `git clone https://github.com/nakajinbee/otree-econ-exp-team1.git`
-	3.	フォルダ otree-econ-exp-team1 が作成され、中にソースコードが入っています。
+
+3.	フォルダ otree-econ-exp-team1 が作成され、中にソースコードが入っています。
 
 
 ## ✏️ 4. ソースコードを修正してGitHubに反映する手順
