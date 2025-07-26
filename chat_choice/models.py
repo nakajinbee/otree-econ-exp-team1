@@ -74,15 +74,6 @@ class Player(BasePlayer):
         return {p.id_in_group: text for p in group.get_players() if p.team() == team}
     
 
-
-    def is_cooperation_established_for_team(self, team_number):
-        # あなたの協調判定ロジックに応じて修正
-        if team_number == 1:
-            return self.cooperation_team1_established
-        else:
-            return self.cooperation_team2_established
-
-
 def check_force_terminate(group: Group, **kwargs):
     for p in group.get_players():
         if p.timed_out or p.e is None or p.q is None:

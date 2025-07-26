@@ -3,19 +3,7 @@
 {% endblock %}
 
 {% block content %}
-<h3>販促費Eを選んでください</h3>
-
-<!-- チャットボックス -->
-<div id="chat-log" style="border: 1px solid #ccc; height: 200px; overflow-y: scroll; white-space: pre-wrap;">
-    {{ chat_log }}
-</div>
-
-<!-- メッセージ送信用 -->
-<input id="chat-input" type="text" placeholder="メッセージを入力..." style="width: 80%;">
-<button type="button" id="send-btn">送信</button>
-
-<hr>
-
+<h3>販促費　E を選んでください</h3>
 <form method="post">
   {{ formfields }}
     <!-- 次へボタンを削除または非表示に -->
@@ -27,33 +15,6 @@
 </form>
 
 <script>
-    const chatBox = document.getElementById('chat-box');
-    const input = document.getElementById('chat-input');
-    const sendBtn = document.getElementById('send-btn');
-
-    sendBtn.addEventListener('click', () => {
-        const message = input.value.trim();
-        if (message) {
-            liveSend(message);
-            input.value = '';
-        }
-        location.reload();
-    });
-
-    liveRecv((message) => {
-        const div = document.createElement('div');
-        div.textContent = message;
-        chatBox.appendChild(div);
-        chatBox.scrollTop = chatBox.scrollHeight;
-    });
-
-
-    setTimeout(() => {
-        liveSend({ type: "get_vars" });
-        location.reload();
-    }, 1000);
- 
-
     // 制限時間（秒）
     const TIME_LIMIT = 30;
 
