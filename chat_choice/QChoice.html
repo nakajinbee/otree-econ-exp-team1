@@ -1,28 +1,24 @@
-{{ block title }}
-    Page title
-{{ endblock }}
-
-{{ block content }}
-<h3>生産量　Q  を選んでください</h3>
+{{ block title }} Page title {{ endblock }} {{ block content }}
+<h3>生産量　Q を選んでください</h3>
 
 <form method="post">
-     {{ formfields }}
-    
-     <!-- 次へボタンを非表示にする -->
-    <style>
-        button[type=submit] {
-            display: none;
-        }
-    </style>
+  {{ formfields }}
+
+  <!-- 次へボタンを非表示にする -->
+  <style>
+    button[type="submit"] {
+      display: none;
+    }
+  </style>
 </form>
 
 <script>
-    // 制限時間（秒）
-    const TIME_LIMIT = 30;
+  // 制限時間（秒）
+  const TIME_LIMIT = 30;
 
-    // 制限時間経過後に自動送信する
-    setTimeout(() => {
-        document.querySelector('form').submit();
-    }, TIME_LIMIT * 1000);
+  // 制限時間経過後に自動送信する
+  setTimeout(() => {
+    document.querySelector("form").submit();
+  }, TIME_LIMIT * 1000);
 </script>
 {% endblock %}

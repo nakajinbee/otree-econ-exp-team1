@@ -1,55 +1,67 @@
 from otree.api import *
 
+
 class C(BaseConstants):
-    NAME_IN_URL = 'chat_choice'
+    NAME_IN_URL = "chat_choice"
     PLAYERS_PER_GROUP = 4
     NUM_ROUNDS = 14
-    E_CHOICES = list(range(16,38,2)) #16~36の偶数
-    Q_CHOICES = [2,4,6,8,10]
+    E_CHOICES = list(range(16, 38, 2))  # 16~36の偶数
+    Q_CHOICES = [2, 4, 6, 8, 10]
+
 
 class Subsession(BaseSubsession):
     def creating_session(self):
         if self.round_number <= 7:
             self.group_randomly(fixed_id_in_group=True)
         else:
-            self.group_randomly()    
+            self.group_randomly()
+
 
 class Group(BaseGroup):
     total_e = models.IntegerField()
     P1 = models.FloatField()
     P2 = models.FloatField()
-    chat_log_team1 = models.LongStringField(blank=True, default='')  # チーム1用チャットログ
-    chat_log_team2 = models.LongStringField(blank=True, default='')  # チーム2用チャットログ
-    force_terminate = models.BooleanField(initial=False) 
+    chat_log_team1 = models.LongStringField(
+        blank=True, default=""
+    )  # チーム1用チャットログ
+    chat_log_team2 = models.LongStringField(
+        blank=True, default=""
+    )  # チーム2用チャットログ
+    force_terminate = models.BooleanField(initial=False)
+
 
 class Player(BasePlayer):
-    chat_choice = models.StringField(choices=[('C', 'C'), ('N', 'N')], blank=True
-    )
+    chat_choice = models.StringField(choices=[("C", "C"), ("N", "N")], blank=True)
     e = models.IntegerField(choices=C.E_CHOICES)
     q = models.IntegerField(choices=C.Q_CHOICES)
     profit = models.FloatField()
-    chat_log = models.LongStringField(blank=True, default='')
+    chat_log = models.LongStringField(blank=True, default="")
     timed_out = models.BooleanField(initial=False)
 
-
     def market(self):
-        return 1 if self.id_in_group in [1,2] else 2
+        return 1 if self.id_in_group in [1, 2] else 2
 
     def team(self):
         return 1 if self.id_in_group in [1, 2] else 2
-    
+
     def live_chat(self, message):
         if isinstance(message, dict) and message.get("type") == "get_vars":
             # もともと vars_for_template() で返してたものをここで返す
-            chat_log = self.group.chat_log_team1 if self.team() == 1 else self.group.chat_log_team2
-            return {self.id_in_group: {'chat_log': chat_log}}
+            chat_log = (
+                self.group.chat_log_team1
+                if self.team() == 1
+                else self.group.chat_log_team2
+            )
+            return {self.id_in_group: {"chat_log": chat_log}}
         team = self.team()
         group = self.group
         label = self.participant.label or f"P{self.id_in_group}"
         text = f"{label}: {message}"
-        print(f"[live_chat] player {self.id_in_group} (team {team}) sent message: {text}")
+        print(
+            f"[live_chat] player {self.id_in_group} (team {team}) sent message: {text}"
+        )
 
-    # チャットログをグループで記録
+        # チャットログをグループで記録
         if team == 1:
             if group.chat_log_team1:
                 group.chat_log_team1 += f"\n{text}"
@@ -61,19 +73,17 @@ class Player(BasePlayer):
             else:
                 group.chat_log_team2 = text
 
-
         debug_chat = ""
         if team == 1:
             debug_chat = group.chat_log_team1
         else:
             debug_chat = group.chat_log_team2
-        print(f"[live_chat] player {self.id_in_group} (team {team}) sent message: {text} debug_chat:{debug_chat}")
- 
+        print(
+            f"[live_chat] player {self.id_in_group} (team {team}) sent message: {text} debug_chat:{debug_chat}"
+        )
 
-    # 同じチームの全プレイヤーに送信（return形式）
+        # 同じチームの全プレイヤーに送信（return形式）
         return {p.id_in_group: text for p in group.get_players() if p.team() == team}
-    
-
 
     def is_cooperation_established_for_team(self, team_number):
         # あなたの協調判定ロジックに応じて修正
@@ -87,8 +97,8 @@ def check_force_terminate(group: Group, **kwargs):
     for p in group.get_players():
         if p.timed_out or p.e is None or p.q is None:
             group.force_terminate = True
-            break   
-    
+            break
+
 
 def set_payoffs(group: Group):
     players = group.get_players()
@@ -101,7 +111,7 @@ def set_payoffs(group: Group):
     e34 = e3 + e4
     q12 = q1 + q2
     q34 = q3 + q4
-    
+
     if e12 > 0:
         group.P1 = max(0, 36 - (total_e / e12) * q12)
     else:

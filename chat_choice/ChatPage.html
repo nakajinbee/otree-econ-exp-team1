@@ -1,23 +1,19 @@
-{% extends "global/Page.html" %}
-{% load otree %}
-
-{% block content %}
-<p>グループでリアルタイムチャットができます。45秒以内にCまたはNを選択してください。</p>
-
+{% extends "global/Page.html" %} {% load otree %} {% block content %}
+<p>
+  グループでリアルタイムチャットができます。45秒以内にCまたはNを選択してください。
+</p>
 
 <!-- プレイヤー選択 -->
- <form method="post">
-    {{ formfields }}
-    <!-- 次へボタンは非表示 -->
-    <button type="submit" style="display: none;" id="hidden-submit">次へ</button>
+<form method="post">
+  {{ formfields }}
+  <!-- 次へボタンは非表示 -->
+  <button type="submit" style="display: none" id="hidden-submit">次へ</button>
 </form>
-{% endblock %}
-
-{% block scripts %}
-<script>    
-    // 45秒後に自動でフォームを送信（ページ遷移）
-    setTimeout(() => {
-        document.getElementById('hidden-submit').click();
-    }, 45 * 1000);  // 45秒
+{% endblock %} {% block scripts %}
+<script>
+  // 45秒後に自動でフォームを送信（ページ遷移）
+  setTimeout(() => {
+    document.getElementById("hidden-submit").click();
+  }, 45 * 1000); // 45秒
 </script>
 {% endblock %}
