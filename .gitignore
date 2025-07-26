@@ -1,0 +1,9 @@
+__pycache__/
+db.sqlite3
+*.pyc
+_static/
+_templates/
+_rooms/
+.env
+*.log
+Procfile
