@@ -6,7 +6,7 @@ from .models import check_force_terminate
 class ChatPage(Page):
     form_model = "player"
     form_fields = ["chat_choice"]
-    timeout_seconds = 200
+    timeout_seconds = 45
 
     def before_next_page(self):
         if self.timeout_happened and not self.player.chat_choice:
