@@ -78,6 +78,9 @@ class Player(BasePlayer):
 
 
 def check_force_terminate(group: Group, **kwargs):
+    # 引数がSubsessionやRoundなどの情報を含む場合があるため、kwargsを使用
+    # TODO: 引数の型（Group or Subsession等々）によって適切にチェックする
+
     for p in group.get_players():
         if p.timed_out or p.e is None or p.q is None:
             group.force_terminate = True

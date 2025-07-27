@@ -79,6 +79,7 @@ class ResultsWaitPage(WaitPage):
 
 class CheckTimeout(WaitPage):
     wait_for_all_groups = True
+    # グループ内のプレイヤーがタイムアウトしたかどうかをチェック
     after_all_players_arrive = check_force_terminate
 
 
