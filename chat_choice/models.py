@@ -7,6 +7,7 @@ class C(BaseConstants):
     NUM_ROUNDS = 14
     E_CHOICES = list(range(16, 38, 2))  # 16~36の偶数
     Q_CHOICES = [2, 4, 6, 8, 10]
+    CHAT_CHOICES = [("C", "C：協力する"), ("N", "N：協力しない")]  # チャット選択肢
 
 
 class Subsession(BaseSubsession):
@@ -19,8 +20,6 @@ class Subsession(BaseSubsession):
 
 class Group(BaseGroup):
     total_e = models.IntegerField()
-    P1 = models.FloatField()
-    P2 = models.FloatField()
     chat_log_team1 = models.LongStringField(
         blank=True, default=""
     )  # チーム1用チャットログ
@@ -29,9 +28,17 @@ class Group(BaseGroup):
     )  # チーム2用チャットログ
     force_terminate = models.BooleanField(initial=False)
 
+    # team全員がC：協力するを選択しているか判定する
+    def is_cooperation_established_for_team(self, team_number):
+        team_players = [p for p in self.get_players() if p.team() == team_number]
+        # 全員が "C" を選択しているか判定
+        return all(
+            p.chat_choice == "C" for p in team_players if p.chat_choice is not None
+        )
+
 
 class Player(BasePlayer):
-    chat_choice = models.StringField(choices=[("C", "C"), ("N", "N")], blank=True)
+    chat_choice = models.StringField(choices=C.CHAT_CHOICES, blank=True)
     e = models.IntegerField(choices=C.E_CHOICES)
     q = models.IntegerField(choices=C.Q_CHOICES)
     profit = models.FloatField()
@@ -68,14 +75,6 @@ class Player(BasePlayer):
 
         # 同じチームの全プレイヤーに送信（return形式）
         return {p.id_in_group: text for p in group.get_players() if p.team() == team}
-
-    # TODO: バグなので一旦コメントアウト
-    # def is_cooperation_established_for_team(self, team_number):
-    #     # あなたの協調判定ロジックに応じて修正
-    #     if team_number == 1:
-    #         return self.cooperation_team1_established
-    #     else:
-    #         return self.cooperation_team2_established
 
 
 def check_force_terminate(group: Group, **kwargs):

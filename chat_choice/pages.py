@@ -13,24 +13,33 @@ class ChatPage(Page):
             self.player.chat_choice = "N"
 
 
+# チャットの前の待機ページ
+# 全員がC or N　を選択した上でChatのページを開く必要がある
+class CooperationChoiceWaitPage(WaitPage):
+    # 処理なし
+    pass
+
+
 class EChoice(Page):
     form_model = "player"
     form_fields = ["e"]
-    timeout_seconds = 30
+    timeout_seconds = 10000
     live_method = "live_chat"
 
-    # TODO:　バグなので一旦コメントアウト
-    # def is_displayed(self):
-    # 協力が成立した組のみチャットを有効化する
-    # return self.player.group.is_cooperation_established_for_team(self.player.team())
-
+    # テンプレート（〜.html）に渡す変数
     def vars_for_template(self):
+        is_cooperation = self.group.is_cooperation_established_for_team(
+            self.player.team()
+        )
+
         return {
+            # チームの協力が確立されているかどうかを判定
+            "is_cooperation_established_for_team": is_cooperation,
             "chat_log": (
                 self.player.group.chat_log_team1
                 if self.player.team() == 1
                 else self.player.group.chat_log_team2
-            )
+            ),
         }
 
     def before_next_page(self):
@@ -107,6 +116,7 @@ class ForcedTermination(Page):
 
 page_sequence = [
     ChatPage,
+    CooperationChoiceWaitPage,
     EChoice,
     MarketShare,
     QChoice,

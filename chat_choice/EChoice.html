@@ -1,6 +1,8 @@
 {% block title %} Page title {% endblock %} {% block content %}
 <h3>販促費Eを選んでください</h3>
 
+<!-- is_displayed がTrueの場合のみ表示する -->
+{% if is_cooperation_established_for_team %}
 <!-- チャットボックス -->
 <div
   id="chat-log"
@@ -22,7 +24,9 @@
   style="width: 80%"
 />
 <button type="button" id="send-btn">送信</button>
-
+{% else %}
+<!-- 協力されなかった場合の画面表示 -->
+{% endif %}
 <hr />
 
 <form method="post">
