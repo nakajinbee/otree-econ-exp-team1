@@ -23,7 +23,7 @@ class CooperationChoiceWaitPage(WaitPage):
 class EChoice(Page):
     form_model = "player"
     form_fields = ["e"]
-    timeout_seconds = 10000
+    timeout_seconds = 30
     live_method = "live_chat"
 
     # テンプレート（〜.html）に渡す変数
