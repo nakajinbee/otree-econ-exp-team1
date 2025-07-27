@@ -36,37 +36,23 @@
 </form>
 
 <script>
-  const chatBox = document.getElementById("chat-box");
+  const chatBox = document.getElementById("chat-log");
   const input = document.getElementById("chat-input");
   const sendBtn = document.getElementById("send-btn");
 
   sendBtn.addEventListener("click", () => {
-    const message = input.value.trim();
+    const message = input.value;
     if (message) {
       liveSend(message);
       input.value = "";
     }
-    location.reload();
   });
 
-  liveRecv((message) => {
-    const div = document.createElement("div");
-    div.textContent = message;
-    chatBox.appendChild(div);
+  //   チャットメッセージを受信する関数;
+  function liveRecv(message) {
+    console.log("Received message:", message);
+    chatBox.textContent += (chatBox.textContent ? "\n" : "") + message;
     chatBox.scrollTop = chatBox.scrollHeight;
-  });
-
-  setTimeout(() => {
-    liveSend({ type: "get_vars" });
-    location.reload();
-  }, 1000);
-
-  // 制限時間（秒）
-  const TIME_LIMIT = 30;
-
-  // 制限時間経過後に自動送信する
-  setTimeout(() => {
-    document.querySelector("form").submit();
-  }, TIME_LIMIT * 1000);
+  }
 </script>
 {% endblock %}

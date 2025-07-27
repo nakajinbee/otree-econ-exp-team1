@@ -19,9 +19,10 @@ class EChoice(Page):
     timeout_seconds = 30
     live_method = "live_chat"
 
-    def is_displayed(self):
-        # 協力が成立した組のみチャットを有効化する
-        return self.player.group.is_cooperation_established_for_team(self.player.team())
+    # TODO:　バグなので一旦コメントアウト
+    # def is_displayed(self):
+    # 協力が成立した組のみチャットを有効化する
+    # return self.player.group.is_cooperation_established_for_team(self.player.team())
 
     def vars_for_template(self):
         return {

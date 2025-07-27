@@ -44,15 +44,8 @@ class Player(BasePlayer):
     def team(self):
         return 1 if self.id_in_group in [1, 2] else 2
 
+    # チャットを送信するメソッド
     def live_chat(self, message):
-        if isinstance(message, dict) and message.get("type") == "get_vars":
-            # もともと vars_for_template() で返してたものをここで返す
-            chat_log = (
-                self.group.chat_log_team1
-                if self.team() == 1
-                else self.group.chat_log_team2
-            )
-            return {self.id_in_group: {"chat_log": chat_log}}
         team = self.team()
         group = self.group
         label = self.participant.label or f"P{self.id_in_group}"
@@ -64,33 +57,25 @@ class Player(BasePlayer):
         # チャットログをグループで記録
         if team == 1:
             if group.chat_log_team1:
-                group.chat_log_team1 += f"\n{text}"
+                group.chat_log_team1 += f"\n  {text}"
             else:
                 group.chat_log_team1 = text
         else:
             if group.chat_log_team2:
-                group.chat_log_team2 += f"\n{text}"
+                group.chat_log_team2 += f"\n  {text}"
             else:
                 group.chat_log_team2 = text
-
-        debug_chat = ""
-        if team == 1:
-            debug_chat = group.chat_log_team1
-        else:
-            debug_chat = group.chat_log_team2
-        print(
-            f"[live_chat] player {self.id_in_group} (team {team}) sent message: {text} debug_chat:{debug_chat}"
-        )
 
         # 同じチームの全プレイヤーに送信（return形式）
         return {p.id_in_group: text for p in group.get_players() if p.team() == team}
 
-    def is_cooperation_established_for_team(self, team_number):
-        # あなたの協調判定ロジックに応じて修正
-        if team_number == 1:
-            return self.cooperation_team1_established
-        else:
-            return self.cooperation_team2_established
+    # TODO: バグなので一旦コメントアウト
+    # def is_cooperation_established_for_team(self, team_number):
+    #     # あなたの協調判定ロジックに応じて修正
+    #     if team_number == 1:
+    #         return self.cooperation_team1_established
+    #     else:
+    #         return self.cooperation_team2_established
 
 
 def check_force_terminate(group: Group, **kwargs):
