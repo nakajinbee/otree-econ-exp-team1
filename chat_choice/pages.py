@@ -1,12 +1,12 @@
 from otree.api import Page, WaitPage
 from .models import set_payoffs
 from .models import check_force_terminate
-
+from .models import Group
 
 class ChatPage(Page):
     form_model = "player"
     form_fields = ["chat_choice"]
-    timeout_seconds = 45
+    timeout_seconds = 15
 
     def before_next_page(self):
         if self.timeout_happened and not self.player.chat_choice:
@@ -47,6 +47,14 @@ class EChoice(Page):
             self.player.timed_out = True
 
 
+class ResultsWaitPage1(WaitPage):
+    wait_for_all_groups = True  # 全グループが揃うのを待つ（任意）
+
+    @staticmethod
+    def after_all_players_arrive(group, **kwargs):
+        set_payoffs(group)
+
+
 class MarketShare(Page):
     def vars_for_template(self):
         team_e_total = self.group.get_team_e_total(self.player.team())
@@ -73,8 +81,10 @@ class QChoice(Page):
             self.player.timed_out = True
 
 
-class ResultsWaitPage(WaitPage):
-    after_all_players_arrive = set_payoffs
+class ResultsWaitPage2(WaitPage):
+    @staticmethod
+    def after_all_players_arrive(group, **kwargs):
+        set_payoffs(group)
 
 
 class CheckTimeout(WaitPage):
@@ -119,10 +129,11 @@ page_sequence = [
     ChatPage,
     CooperationChoiceWaitPage,
     EChoice,
+    ResultsWaitPage1,
     MarketShare,
     QChoice,
     CheckTimeout,
-    ResultsWaitPage,
+    ResultsWaitPage2,
     Results,
     ForcedTermination,
 ]

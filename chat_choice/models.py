@@ -36,6 +36,14 @@ class Group(BaseGroup):
             p.chat_choice == "C" for p in team_players if p.chat_choice is not None
         )
 
+    #各市場ごとの需要を出すのにEの合計を出す
+    def get_team_e_total(self, team_number):
+        return sum(
+            p.e for p in self.get_players() if p.team() == team_number and p.e is not None
+        )
+
+    def get_group_e_total(self):
+        return sum(p.e for p in self.get_players() if p.e is not None)
 
 class Player(BasePlayer):
     chat_choice = models.StringField(choices=C.CHAT_CHOICES, blank=True)

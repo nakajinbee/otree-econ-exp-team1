@@ -2,12 +2,6 @@ from os import environ
 
 
 SESSION_CONFIGS = [
-    dict(
-        name='guess_two_thirds',
-        display_name="Guess 2/3 of the Average",
-        app_sequence=['guess_two_thirds', 'payment_info'],
-        num_demo_participants=3,
-    ),
      dict(
         name='chat_choice',
         display_name='three_stage',
@@ -19,9 +13,6 @@ SESSION_CONFIGS = [
         display_name="アンケート",
         num_demo_participants=None,
         app_sequence=['questionnaire'], 
-    ),
-    dict(
-        name='survey', app_sequence=['survey', 'payment_info'], num_demo_participants=1
     ),
 ]
 
