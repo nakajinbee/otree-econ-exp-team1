@@ -1,7 +1,7 @@
 from otree.api import Page, WaitPage
-from .models import set_payoffs
 from .models import check_force_terminate
 from .models import Group
+
 
 class ChatPage(Page):
     form_model = "player"
@@ -50,9 +50,15 @@ class EChoice(Page):
 class ResultsWaitPage1(WaitPage):
     wait_for_all_groups = True  # 全グループが揃うのを待つ（任意）
 
+    # wait_for_all_groups = Trueを実装すると引数はGroupではなくsubsessionになる
     @staticmethod
-    def after_all_players_arrive(group, **kwargs):
-        set_payoffs(group)
+    def after_all_players_arrive(subsession):
+        # Subsession内のグループごとにpayoffを設定
+        for group in subsession.get_groups():
+            # eを選択した後にGroupごとに計算したい処理を呼び出す
+            # TODO: e選択後の処理を実装する（sample_calculate_after_select_eはサンプルの実装なので適宜削除してください）
+            group.sample_calculate_after_select_e
+            # group.set_payoffs() set_payoffsメソッドはQを選択したあとに実行する関数だからここでは実行しないはず
 
 
 class MarketShare(Page):
@@ -82,9 +88,13 @@ class QChoice(Page):
 
 
 class ResultsWaitPage2(WaitPage):
+
     @staticmethod
-    def after_all_players_arrive(group, **kwargs):
-        set_payoffs(group)
+    def after_all_players_arrive(subsession):
+        # qを選択した後に実行する処理
+        for group in subsession.get_groups():
+            # Groupのset_payoffsメソッドを呼び出して、payoffを計算する
+            group.set_payoffs()
 
 
 class CheckTimeout(WaitPage):

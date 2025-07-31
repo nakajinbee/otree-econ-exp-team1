@@ -36,14 +36,53 @@ class Group(BaseGroup):
             p.chat_choice == "C" for p in team_players if p.chat_choice is not None
         )
 
-    #各市場ごとの需要を出すのにEの合計を出す
+    # 各市場ごとの需要を出すのにEの合計を出す
     def get_team_e_total(self, team_number):
         return sum(
-            p.e for p in self.get_players() if p.team() == team_number and p.e is not None
+            p.e
+            for p in self.get_players()
+            if p.team() == team_number and p.e is not None
         )
 
     def get_group_e_total(self):
         return sum(p.e for p in self.get_players() if p.e is not None)
+
+    # eを選択した後にGroupごとに計算したい処理を実装する
+    def sample_calculate_after_select_e(self):
+        # TODO:Groupごとに計算したい処理をここに実装する
+        # TODO:メソッド名も適宜変更する
+        pass
+
+    # 各グループのpayoffを計算するメソッド
+    # 引数のselfはGroup
+    def set_payoffs(self):
+        players = self.get_players()
+        total_e = sum(p.e for p in players)
+
+        e1, e2, e3, e4 = players[0].e, players[1].e, players[2].e, players[3].e
+        q1, q2, q3, q4 = players[0].q, players[1].q, players[2].q, players[3].q
+
+        e12 = e1 + e2
+        e34 = e3 + e4
+        q12 = q1 + q2
+        q34 = q3 + q4
+
+        if e12 > 0:
+            self.P1 = max(0, 36 - (total_e / e12) * q12)
+        else:
+            self.P1 = 0
+
+        if e34 > 0:
+            self.P2 = max(0, 36 - (total_e / e34) * q34)
+        else:
+            self.P2 = 0
+
+        for p in players:
+            price = self.P1 if p.market() == 1 else self.P2
+            raw_profit = price * p.q - p.e
+            p.profit = max(0, raw_profit)  # マイナスなら0に
+            p.payoff = p.profit
+
 
 class Player(BasePlayer):
     chat_choice = models.StringField(choices=C.CHAT_CHOICES, blank=True)
@@ -93,32 +132,3 @@ def check_force_terminate(group: Group, **kwargs):
         if p.timed_out or p.e is None or p.q is None:
             group.force_terminate = True
             break
-
-
-def set_payoffs(group: Group):
-    players = group.get_players()
-    total_e = sum(p.e for p in players)
-
-    e1, e2, e3, e4 = players[0].e, players[1].e, players[2].e, players[3].e
-    q1, q2, q3, q4 = players[0].q, players[1].q, players[2].q, players[3].q
-
-    e12 = e1 + e2
-    e34 = e3 + e4
-    q12 = q1 + q2
-    q34 = q3 + q4
-
-    if e12 > 0:
-        group.P1 = max(0, 36 - (total_e / e12) * q12)
-    else:
-        group.P1 = 0
-
-    if e34 > 0:
-        group.P2 = max(0, 36 - (total_e / e34) * q34)
-    else:
-        group.P2 = 0
-
-    for p in players:
-        price = group.P1 if p.market() == 1 else group.P2
-        raw_profit = price * p.q - p.e
-        p.profit = max(0, raw_profit)  # マイナスなら0に
-        p.payoff = p.profit
