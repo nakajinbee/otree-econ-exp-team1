@@ -137,10 +137,10 @@ page_sequence = [
     ChatPage,
     CooperationChoiceWaitPage,
     EChoice,
+    CheckTimeout,  # この画面で強制終了の未選択&タイムアウトチェックを行う
     ResultsWaitPage1,
     MarketShare,
     QChoice,
-    CheckTimeout,
     ResultsWaitPage2,
     Results,
     ForcedTermination,
