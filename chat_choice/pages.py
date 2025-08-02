@@ -97,7 +97,6 @@ class CheckTimeout(WaitPage):
 
     @staticmethod
     def after_all_players_arrive(subsession):
-        print("Checking for force termination...")
         for group in subsession.get_groups():
             check_force_terminate(group)
 
