@@ -88,19 +88,17 @@ class QChoice(Page):
 
 
 class ResultsWaitPage2(WaitPage):
-
-    @staticmethod
-    def after_all_players_arrive(subsession):
-        # qを選択した後に実行する処理
-        for group in subsession.get_groups():
-            # Groupのset_payoffsメソッドを呼び出して、payoffを計算する
-            group.set_payoffs()
+    def after_all_players_arrive(self):
+        self.group.set_payoffs()
 
 
 class CheckTimeout(WaitPage):
     wait_for_all_groups = True
-    # グループ内のプレイヤーがタイムアウトしたかどうかをチェック
-    after_all_players_arrive = check_force_terminate
+
+    @staticmethod
+    def after_all_players_arrive(subsession):
+        for group in subsession.get_groups():
+            check_force_terminate(group)
 
 
 class Results(Page):

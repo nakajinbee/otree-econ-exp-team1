@@ -27,6 +27,8 @@ class Group(BaseGroup):
         blank=True, default=""
     )  # チーム2用チャットログ
     force_terminate = models.BooleanField(initial=False)
+    P1 = models.FloatField()
+    P2 = models.FloatField()
 
     # team全員がC：協力するを選択しているか判定する
     def is_cooperation_established_for_team(self, team_number):
@@ -50,8 +52,16 @@ class Group(BaseGroup):
     # eを選択した後にGroupごとに計算したい処理を実装する
     def sample_calculate_after_select_e(self):
         # TODO:Groupごとに計算したい処理をここに実装する
+        team_e_total = self.group.get_team_e_total(self.player.team())
+        group_e_total = self.group.get_group_e_total()
+        market_share = (
+            (36 * team_e_total / group_e_total) * 100 if group_e_total != 0 else 0
+        )
+
+        return {"market_share": market_share}
+
         # TODO:メソッド名も適宜変更する
-        pass
+        
 
     # 各グループのpayoffを計算するメソッド
     # 引数のselfはGroup
