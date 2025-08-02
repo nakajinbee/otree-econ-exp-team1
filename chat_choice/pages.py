@@ -97,6 +97,7 @@ class CheckTimeout(WaitPage):
 
     @staticmethod
     def after_all_players_arrive(subsession):
+        print("Checking for force termination...")
         for group in subsession.get_groups():
             check_force_terminate(group)
 
@@ -137,8 +138,8 @@ page_sequence = [
     ChatPage,
     CooperationChoiceWaitPage,
     EChoice,
-    CheckTimeout,  # この画面で強制終了の未選択&タイムアウトチェックを行う
     ResultsWaitPage1,
+    CheckTimeout,  # この画面で強制終了の未選択&タイムアウトチェックを行う
     MarketShare,
     QChoice,
     ResultsWaitPage2,
