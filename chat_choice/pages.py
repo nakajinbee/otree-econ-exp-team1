@@ -1,6 +1,5 @@
 from otree.api import Page, WaitPage
-from .models import check_force_terminate
-from .models import Group
+from .models import Group, check_timeout_and_missing_e, check_timeout_and_missing_q
 
 
 class ChatPage(Page):
@@ -43,7 +42,7 @@ class EChoice(Page):
         }
 
     def before_next_page(self):
-        if self.timeout_happened or self.player.e is None:
+        if self.timeout_happened or self.player.e == 0:
             self.player.timed_out = True
 
 
@@ -60,6 +59,10 @@ class ResultsWaitPage1(WaitPage):
             group.sample_calculate_after_select_e
             # group.set_payoffs() set_payoffsメソッドはQを選択したあとに実行する関数だからここでは実行しないはず
 
+    # 前のページで未選択＆強制終了した人がいたらこのページは表示しない
+    def is_displayed(self):
+        return not self.group.force_terminate
+
 
 class MarketShare(Page):
     def vars_for_template(self):
@@ -71,6 +74,7 @@ class MarketShare(Page):
 
         return {"market_share": market_share}
 
+    # 前のページで未選択＆強制終了した人がいたらこのページは表示しない
     def is_displayed(self):
         return not self.group.force_terminate
 
@@ -82,8 +86,12 @@ class QChoice(Page):
     form_fields = ["q"]
     timeout_seconds = 30
 
+    # 前のページで未選択＆強制終了した人がいたらこのページは表示しない
+    def is_displayed(self):
+        return not self.group.force_terminate
+
     def before_next_page(self):
-        if self.timeout_happened or self.player.q is None:
+        if self.timeout_happened or self.player.q == 0:
             self.player.timed_out = True
 
 
@@ -91,14 +99,39 @@ class ResultsWaitPage2(WaitPage):
     def after_all_players_arrive(self):
         self.group.set_payoffs()
 
+    # 前のページで未選択＆強制終了した人がいたらこのページは表示しない
+    def is_displayed(self):
+        return not self.group.force_terminate
 
-class CheckTimeout(WaitPage):
+
+# E値を未選択&タイムアウトしていないかチェックする
+class CheckTimeoutAndMissingE(WaitPage):
     wait_for_all_groups = True
 
     @staticmethod
     def after_all_players_arrive(subsession):
         for group in subsession.get_groups():
-            check_force_terminate(group)
+            # e値が未選択またはタイムアウトした人がいる場合、強制終了する
+            check_timeout_and_missing_e(group)
+
+    # 前のページで未選択＆強制終了した人がいたらこのページは表示しない
+    def is_displayed(self):
+        return not self.group.force_terminate
+
+
+# Q値を未選択&タイムアウトしていないかチェックする
+class CheckTimeoutAndMissingQ(WaitPage):
+    wait_for_all_groups = True
+
+    @staticmethod
+    def after_all_players_arrive(subsession):
+        for group in subsession.get_groups():
+            # q値が未選択またはタイムアウトした人がいる場合、強制終了する
+            check_timeout_and_missing_q(group)
+
+    # 前のページで未選択＆強制終了した人がいたらこのページは表示しない
+    def is_displayed(self):
+        return not self.group.force_terminate
 
 
 class Results(Page):
@@ -137,10 +170,11 @@ page_sequence = [
     ChatPage,
     CooperationChoiceWaitPage,
     EChoice,
+    CheckTimeoutAndMissingE,  # この画面で「e値未選択&タイムアウト」のチェックを行う
     ResultsWaitPage1,
-    CheckTimeout,  # この画面で強制終了の未選択&タイムアウトチェックを行う
     MarketShare,
     QChoice,
+    CheckTimeoutAndMissingQ,  # この画面で「q値未選択&タイムアウト」のチェックを行う
     ResultsWaitPage2,
     Results,
     ForcedTermination,

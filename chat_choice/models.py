@@ -61,7 +61,6 @@ class Group(BaseGroup):
         return {"market_share": market_share}
 
         # TODO:メソッド名も適宜変更する
-        
 
     # 各グループのpayoffを計算するメソッド
     # 引数のselfはGroup
@@ -134,11 +133,22 @@ class Player(BasePlayer):
         return {p.id_in_group: text for p in group.get_players() if p.team() == team}
 
 
-def check_force_terminate(group: Group, **kwargs):
+# E値が入力されずタイムアウトした場合、強制終了する。
+def check_timeout_and_missing_e(group: Group, **kwargs):
     # 引数がSubsessionやRoundなどの情報を含む場合があるため、kwargsを使用
     # TODO: 引数の型（Group or Subsession等々）によって適切にチェックする
-
     for p in group.get_players():
-        if p.timed_out or p.e is None or p.q is None:
+        print(f"p.timed_out {p.timed_out} , p.e {p.e}")
+
+        if p.timed_out and p.e == 0:
+            group.force_terminate = True
+            break
+
+
+# Q値が入力されずタイムアウトした場合、強制終了する。
+def check_timeout_and_missing_q(group: Group, **kwargs):
+    for p in group.get_players():
+        print(f"p.timed_out {p.timed_out} , p.q {p.q}")
+        if p.timed_out and p.q == 0:
             group.force_terminate = True
             break
